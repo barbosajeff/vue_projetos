@@ -4,7 +4,7 @@
     <apexchart 
       type="line"
       height="400"
-      width="700"
+      width="800"
       :options="chartOptions"
       :series="series"
     />
