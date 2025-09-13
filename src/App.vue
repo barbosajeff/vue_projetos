@@ -51,63 +51,48 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from "vue"
+import axios from "axios"
 import GraficoComponet from "./components/GraficoComponet.vue"
 
-export default {
-  name: "App",
-  components: { GraficoComponet },
+const dateInitial = ref("2025-09-08")
+const dateFinal = ref("2025-09-08")
+const categories = ref([])
+const series = ref([])
 
-  data() {
-    return {
-      dateInitial: "2025-09-08",
-      dateFinal: "2025-09-08",
-      categories: [],
-      series: []
-    };
-  },
-
-  methods: {
-
-    //filtrar por datas
-    async filtrarData() {
-      try {
-        const response = await fetch(
-          "https://polvo-api.consensotec.com.br/polvo-chart-rest-api/chart",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              chartID: "dadosDiariosArrecadacao",
-              accountID: 16,
-              userID: 24,
-              payload: {
-                dateInitial: this.dateInitial,
-                dateFinal: this.dateFinal,
-                companyIsMunicipal: false,
-                isContabil: false,
-              },
-            }),
-          }
-        );
-
-        const data = await response.json();
-
-        // Atualiza os dados do gráfico
-        this.categories = data?.categories ?? [];
-        this.series = data?.series ?? [];
-      } catch (err) {
-        console.error("Erro ao buscar dados:", err);
+async function filtrarData() {
+  try {
+    const response = await axios.post(
+      "https://polvo-api.consensotec.com.br/polvo-chart-rest-api/chart",
+      {
+        chartID: "dadosDiariosArrecadacao",
+        accountID: 16,
+        userID: 24,
+        payload: {
+          dateInitial: dateInitial.value,
+          dateFinal: dateFinal.value,
+          companyIsMunicipal: false,
+          isContabil: false,
+        },
+      },
+      {
+        headers: { "Content-Type": "application/json" }
       }
-    }
-  },
+    )
 
-  mounted() {
-    
-    // Chama a API assim que o componente montar
-    this.fetchChartData();
+    const data = response.data
+
+    categories.value = data?.categories ?? []
+    series.value = data?.series ?? []
+  } catch (err) {
+    console.error("Erro ao buscar dados:", err)
   }
-};
+}
+
+onMounted(() => {
+  filtrarData()
+})
 </script>
 
 <style >

@@ -12,43 +12,27 @@
 </template>
 
 <script>
+import { computed, defineComponent } from "vue"
 
-
-export default {
+export default defineComponent({
   name: "GraficoComponet",
-  components: {  },
-
   props: {
     categories: { type: Array, default: () => [] },
     series: { type: Array, default: () => [] }
   },
+  setup(props) {
+    const chartOptions = computed(() => ({
+      chart: { id: "dados-diarios-arrecadacao", toolbar: { show: true } },
+      xaxis: { categories: props.categories ?? [] },
+      yaxis: {
+        labels: { formatter: v => (v == null ? v : Number(v).toLocaleString("pt-BR")) }
+      },
+      tooltip: {
+        y: { formatter: v => (v == null ? v : Number(v).toLocaleString("pt-BR")) }
+      }
+    }))
 
-  computed: {
-    chartOptions() {
-      return {
-        chart: {
-          id: "dados-diarios-arrecadacao",
-          toolbar: { show: true }
-        },
-        xaxis: {
-          categories: this.categories
-        },
-        yaxis: {
-          labels: {
-            formatter: (v) => v.toLocaleString("pt-BR")
-          }
-        },
-        tooltip: {
-          y: {
-            formatter: (v) => v.toLocaleString("pt-BR")
-          }
-        }
-      };
-    }
+    return { chartOptions }
   }
-};
+})
 </script>
-
-<style scoped>
-
-</style>
